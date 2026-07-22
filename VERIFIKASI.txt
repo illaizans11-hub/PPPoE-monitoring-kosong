@@ -1,0 +1,23 @@
+VERIFIKASI HASIL AUDIT
+
+Status: LULUS UJI SINTAKS DAN LOGIKA INTI
+
+Pemeriksaan yang dilakukan:
+1. app.py dan merge_pppoe.py lolos py_compile.
+2. JavaScript pada dashboard, peta, analitik, daftar pelanggan, dan notifikasi lolos pemeriksaan sintaks Node.js.
+3. Impor dua daerah dengan mode merge mempertahankan data daerah lama.
+4. Tombol impor admin tidak lagi menggunakan mode replace.
+5. Simulasi 57 pelanggan Tegalsruni berhasil diproses.
+6. Hasil simulasi: 20 ONLINE, 37 OFFLINE, total 57.
+7. IP dari payload MikroTik tampil pada data hasil merge.
+8. history.json menghasilkan online 20, offline 37, total 57.
+9. API analitik menghasilkan online 20, offline 37, total 57.
+10. Payload yang hanya berisi sesi aktif tetap menghitung pelanggan offline dari data impor.
+11. Filter router tetap dibentuk dari data yang masuk.
+12. Realtime chart dashboard memakai dataset yang benar.
+
+CATATAN DEPLOYMENT:
+Integrasi dengan perangkat MikroTik asli tetap harus diuji saat pemasangan karena
+script RouterOS, alamat VM, firewall, PUBLIC_BASE_URL, token API, dan akses jaringan
+tidak tersedia di paket ini. Username dan nama router pada payload harus cocok
+dengan data hasil impor.
