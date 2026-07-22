@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Daftar PPPoE Aktif</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='icons/logo.png') }}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      body {
+        background-color: #f8fafc;
+        background: radial-gradient(
+          circle at 100% 0%,
+          #eff6ff 0%,
+          #f8fafc 100%
+        );
+        color: #1e293b;
+        min-height: 100vh;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .main-wrapper {
+        width: 95%;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        box-shadow:
+          0 4px 30px rgba(0, 0, 0, 0.02),
+          0 10px 50px rgba(0, 0, 0, 0.04),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        padding: 35px;
+        margin-bottom: 20px;
+        z-index: 1;
+      }
+
+      .header-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 20px;
+      }
+
+      .header-logo {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        object-fit: contain;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .header-container h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1e3c72;
+      }
+
+      .flash-messages {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .flash-message {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        margin-bottom: 12px;
+        border-left: 5px solid #3b82f6;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      .flash-message.success {
+        border-left-color: #10b981;
+        background-color: #ecfdf5;
+        color: #065f46;
+      }
+
+      .flash-message.error,
+      .flash-message.danger {
+        border-left-color: #ef4444;
+        background-color: #fef2f2;
+        color: #991b1b;
+      }
+
+      .flash-message.info {
+        border-left-color: #3b82f6;
+        background-color: #eff6ff;
+        color: #1e40af;
+      }
+
+      .flash-icon {
+        font-size: 1.25rem;
+        margin-right: 12px;
+        display: flex;
+        align-items: center;
+      }
+
+      .flash-content {
+        flex-grow: 1;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .flash-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: currentColor;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+        padding: 0 5px;
+        line-height: 1;
+      }
+
+      .flash-close:hover {
+        opacity: 1;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .controls-left {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 11px 20px;
+        border-radius: 12px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: white;
+        border: 1.5px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+
+      .btn-nav-dashboard {
+        color: #ff6b35;
+        border-color: #ffd8c7;
+      }
+      .btn-nav-dashboard:hover {
+        background-color: #ff6b35;
+        color: white;
+        border-color: #ff6b35;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(255, 107, 53, 0.2);
+      }
+
+      .btn-nav-notifications {
+        color: #8e44ad;
+        border-color: #e8d4f0;
+      }
+      .btn-nav-notifications:hover {
+        background-color: #8e44ad;
+        color: white;
+        border-color: #8e44ad;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(142, 68, 173, 0.2);
+      }
+
+      .btn-nav-map {
+        color: #3b82f6;
+        border-color: #fadbd8;
+      }
+      .btn-nav-map:hover {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(231, 76, 60, 0.2);
+      }
+
+      .container-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 14px;
+        color: #94a3b8;
+        font-size: 0.95rem;
+        pointer-events: none;
+      }
+
+      .controls .container-input input[type="text"] {
+        padding: 11px 16px 11px 40px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        width: 320px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        background-color: white;
+        color: #0f172a;
+      }
+
+      .controls .container-input input[type="text"]::placeholder {
+        color: #cbd5e1;
+      }
+
+      .controls .container-input input[type="text"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      }
+
+      .controls select {
+        padding: 11px 36px 11px 16px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        background-color: white;
+        color: #0f172a;
+        cursor: pointer;
+      }
+
+      .controls select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      }
+
+      .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        margin-bottom: 25px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+      }
+
+      .table-responsive::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+      }
+
+      .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+      }
+
+      .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+        border: 2px solid #f1f5f9;
+      }
+
+      .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        background-color: #fff;
+        table-layout: auto;
+      }
+
+      th {
+        background-color: #eff6ff;
+        color: #1e40af;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 16px;
+        border-bottom: 2px solid #bfdbfe;
+        text-align: center;
+      }
+
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.78em;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+
+      tr:hover {
+        background-color: #eff6ff !important;
+      }
+
+      .ip-link,
+      .map-link {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .status-badge {
+        font-weight: 750;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 6px 12px;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: auto;
+      }
+
+      .status-online {
+        color: #10b981;
+        background-color: #ecfdf5;
+      }
+
+      .status-offline {
+        color: #ef4444;
+        background-color: #fef2f2;
+      }
+
+      .status-online::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background-color: #10b981;
+        border-radius: 50%;
+      }
+
+      .status-offline::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background-color: #ef4444;
+        border-radius: 50%;
+      }
+
+      .action-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn-action {
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 8px;
+        color: white;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+        transition: all 0.25s ease;
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .btn-action:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+      }
+
+      .container-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        width: 100%;
+      }
+
+      .pagination {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .pagination button {
+        padding: 8px 14px;
+        border: 1px solid #e2e8f0;
+        background-color: white;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .pagination button.active {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+      }
+
+      .pagination button:hover:not(.active) {
+        background-color: #f1f5f9;
+        color: #1e293b;
+      }
+
+      .pagination-ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 10px;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 18px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+        border: 1.5px solid #e8d4f0; /* matches parent border color in hover/initial states */
+      }
+
+      .button-filter {
+        background-color: white;
+        border-radius: 0.5rem;
+        border: 1px solid #e8d4f0;
+        outline: none;
+        padding: 0.6rem 0.7rem;
+        cursor: pointer;
+      }
+
+      .container-filter {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .container-filter:hover > .filter-item {
+        opacity: 1;
+        visibility: visible;
+        margin-top: 0.5rem;
+      }
+
+      .filter-item {
+        position: absolute;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+        width: 11rem;
+        list-style-type: none;
+        font-size: 0.8em;
+        margin-top: -0.5rem;
+        opacity: 0;
+        visibility: hidden;
+        border: 1px solid #e8d4f080;
+        transition: all 0.3s ease;
+      }
+
+      .filter-item li {
+        padding: 0.5rem 0.8rem;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+
+      .filter-item li:hover {
+        background-color: #e2e8f080;
+      }
+
+      @media (max-width: 1024px) {
+        .main-wrapper {
+          padding: 25px;
+        }
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 15px;
+        }
+        .controls-left {
+          justify-content: center;
+        }
+        .container-input {
+          justify-content: center;
+          width: 100%;
+        }
+        .controls .container-input input[type="text"] {
+          width: 100%;
+          max-width: none;
+          flex-grow: 1;
+        }
+        .controls select {
+          flex-grow: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px 10px;
+        }
+        .main-wrapper {
+          padding: 15px;
+          border-radius: 18px;
+        }
+        .header-container {
+          gap: 12px;
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+        }
+        .header-container h1 {
+          font-size: 1.4rem;
+        }
+        .header-logo {
+          width: 45px;
+          height: 45px;
+          border-radius: 10px;
+        }
+        .controls-left {
+          flex-direction: column;
+          width: 100%;
+          gap: 8px;
+        }
+        .btn-nav {
+          width: 100%;
+          justify-content: center;
+          padding: 10px;
+        }
+        .container-input {
+          flex-direction: column;
+          width: 100%;
+          align-items: stretch;
+          gap: 8px;
+        }
+        .search-wrapper {
+          width: 100%;
+        }
+        .controls .container-input input[type="text"] {
+          width: 100%;
+        }
+        .controls select {
+          width: 100%;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+        }
+        th,
+        td {
+          padding: 10px 8px;
+          font-size: 0.8rem;
+        }
+
+        .filter-item {
+          right: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="header-container">
+        <img
+          src="{{ url_for('static', filename='icons/logo.png') }}"
+          alt="Logo"
+          class="header-logo"
+        />
+        <h1>Daftar Pelanggan PPPoE</h1>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+          <div class="flash-icon">
+            {% if category == 'success' %}
+            <i class="fas fa-check-circle"></i>
+            {% elif category == 'error' or category == 'danger' %}
+            <i class="fas fa-exclamation-circle"></i>
+            {% else %}
+            <i class="fas fa-info-circle"></i>
+            {% endif %}
+          </div>
+          <div class="flash-content">{{ message }}</div>
+          <button class="flash-close" onclick="this.parentElement.remove()">
+            &times;
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+
+      <div class="controls">
+        <div class="controls-left">
+          <a href="/dashboard" class="btn-nav btn-nav-dashboard">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a
+            href="/notifications"
+            class="btn-nav btn-nav-notifications"
+            style="position: relative"
+          >
+            <i class="fas fa-bell"></i> Notifikasi
+            <span
+              id="notification-badge"
+              class="notification-badge"
+              style="display: none"
+              >0</span
+            >
+          </a>
+          <a href="/" class="btn-nav btn-nav-map">
+            <i class="fas fa-map"></i> Peta
+          </a>
+          <button type="button" id="importButton" class="btn-nav btn-nav-dashboard" style="cursor:pointer">
+            <i class="fas fa-file-import"></i> Impor Data
+          </button>
+          <input type="file" id="importFile" accept=".json,.csv,application/json,text/csv" hidden>
+        </div>
+
+        <div class="container-input">
+          <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Cari User..." />
+            <div class="container-filter">
+              <button class="button-filter">
+                <i class="fas fa-filter"></i>
+              </button>
+              <ul class="filter-item">
+                <li data-prefix="semua">Semua Wilayah</li>
+                {% for area in area_filters %}
+                <li data-prefix="{{ area.value }}">{{ area.label }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <select id="routerFilter">
+            <option value="all">Semua Router</option>
+            {% for router in routers %}
+            <option value="{{ router|lower }}">{{ router }}</option>
+            {% endfor %}
+          </select>
+          <select id="statusFilter">
+            <option value="all">Tampilkan Semua</option>
+            <option value="on">Hanya ONLINE</option>
+            <option value="off">Hanya OFFLINE</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="pppoeTable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>ID Unik</th>
+              <th>Nama / User</th>
+              <th>Lokasi</th>
+              <th>IP Address</th>
+              <th>Koordinat</th>
+              <th>Status</th>
+              <th>Uptime</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="pppoeBody">
+            {% for pppoe in pppoes %}
+            <tr data-router="{{ (pppoe.router or '')|lower }}">
+              <td>{{ loop.index }}</td>
+              <td>{{ pppoe.id or pppoe.id_pelanggan }}</td>
+              <td>{{ pppoe.user }}</td>
+              <td>{{ pppoe.lokasi }}</td>
+              <td class="ip-link">{{ pppoe.ip }}</td>
+              <td>
+                {% if pppoe.coordinate and pppoe.coordinate != '-' %}
+                <a href="https://www.google.com/maps/search/?api=1&query={{ pppoe.coordinate }}" target="_blank" class="map-link">
+                  {{ pppoe.coordinate }}
+                </a>
+                {% else %}-{% endif %}
+              </td>
+              <td>
+                <span class="status-badge status-{{ pppoe.status | lower }}"
+                  >{{ pppoe.status }}</span
+                >
+              </td>
+              <td>{{ pppoe.uptime if pppoe.status == 'ONLINE' else '-' }}</td>
+              <td>
+                <div class="action-container">
+                  <a href="/edit/{{ pppoe.user }}" class="btn-action">Edit</a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr class="empty-row">
+              <td colspan="9" style="text-align:center;padding:35px;color:#64748b">
+                Belum ada data. Gunakan tombol <strong>Impor Data</strong> atau kirim data dari MikroTik.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="container-pagination">
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <script>
+      const rowsPerPage = 10;
+      const tbody = document.getElementById("pppoeBody");
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const routerFilter = document.getElementById("routerFilter");
+      const importButton = document.getElementById("importButton");
+      const importFile = document.getElementById("importFile");
+      const pagination = document.getElementById("pagination");
+      const filterItems = document.querySelectorAll(".filter-item li");
+
+      let currentPage = 1;
+      let filteredRows = [];
+      let currentArea = "semua";
+
+      filterItems.forEach((item) => {
+        item.addEventListener("click", function (e) {
+          currentArea = e.target.dataset.prefix.trim().toLocaleLowerCase();
+          filterRows();
+        });
+      });
+
+      function filterRows() {
+        const filter = searchInput.value.toLowerCase().trim();
+        const status = statusFilter.value;
+        const router = routerFilter.value;
+
+        filteredRows = Array.from(tbody.querySelectorAll("tr:not(.empty-row)")).filter(
+          (row) => {
+            const userCell = row.querySelector("td:nth-child(3)");
+            const locationCell = row.querySelector("td:nth-child(4)");
+            const statusCell = row.querySelector("td:nth-child(7)");
+            if (!userCell || !statusCell) return false;
+
+            const username = userCell.textContent.trim().toLowerCase();
+            const location = locationCell ? locationCell.textContent.trim().toLowerCase() : "";
+            const statusText = statusCell.textContent.trim().toUpperCase();
+            const rowRouter = (row.dataset.router || "").toLowerCase();
+
+            const statusMatch =
+              status === "all" ||
+              (status === "on" && statusText === "ONLINE") ||
+              (status === "off" && statusText === "OFFLINE");
+            const areaMatch = currentArea === "semua" || username.startsWith(currentArea + "-");
+            const routerMatch = router === "all" || rowRouter === router;
+            const searchMatch = !filter || username.includes(filter) || location.includes(filter);
+            return statusMatch && areaMatch && routerMatch && searchMatch;
+          },
+        );
+        currentPage = 1;
+        paginate();
+      }
+
+      function paginate() {
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+        Array.from(tbody.querySelectorAll("tr")).forEach((row) => {
+          row.style.display = "none";
+        });
+        const emptyRow = tbody.querySelector(".empty-row");
+        if (emptyRow && filteredRows.length === 0) {
+          emptyRow.style.display = "";
+        }
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        filteredRows.slice(start, end).forEach((row, index) => {
+          row.style.display = "";
+          row.querySelector("td:nth-child(1)").textContent = start + index + 1;
+        });
+
+        pagination.innerHTML = "";
+        if (totalPages > 1) {
+          const isMobile = window.innerWidth <= 768;
+          const maxVisible = isMobile ? 5 : 10;
+
+          let startPage, endPage;
+          if (totalPages <= maxVisible + 4) {
+            startPage = 1;
+            endPage = totalPages;
+          } else {
+            const maxPagesAfterCurrent = Math.floor(maxVisible / 2);
+            const maxPagesBeforeCurrent = maxVisible - maxPagesAfterCurrent - 1;
+
+            if (currentPage <= maxPagesBeforeCurrent + 2) {
+              startPage = 1;
+              endPage = maxVisible + 2;
+            } else if (currentPage >= totalPages - maxPagesAfterCurrent - 1) {
+              startPage = totalPages - maxVisible - 1;
+              endPage = totalPages;
+            } else {
+              startPage = currentPage - maxPagesBeforeCurrent;
+              endPage = currentPage + maxPagesAfterCurrent;
+            }
+          }
+
+          if (startPage > 1) {
+            createPageButton(1);
+            if (startPage > 2) {
+              const ellipsis = document.createElement("span");
+              ellipsis.textContent = "...";
+              ellipsis.className = "pagination-ellipsis";
+              pagination.appendChild(ellipsis);
+            }
+          }
+
+          for (let i = startPage; i <= endPage; i++) {
+            createPageButton(i);
+          }
+
+          if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+              const ellipsis = document.createElement("span");
+              ellipsis.textContent = "...";
+              ellipsis.className = "pagination-ellipsis";
+              pagination.appendChild(ellipsis);
+            }
+            createPageButton(totalPages);
+          }
+        }
+      }
+
+      function createPageButton(pageNumber) {
+        const btn = document.createElement("button");
+        btn.textContent = pageNumber;
+        if (pageNumber === currentPage) {
+          btn.classList.add("active");
+        }
+        btn.addEventListener("click", () => {
+          currentPage = pageNumber;
+          paginate();
+        });
+        pagination.appendChild(btn);
+      }
+
+      searchInput.addEventListener("input", filterRows);
+      statusFilter.addEventListener("change", filterRows);
+      routerFilter.addEventListener("change", filterRows);
+
+      importButton.addEventListener("click", () => importFile.click());
+      importFile.addEventListener("change", async () => {
+        const file = importFile.files[0];
+        if (!file) return;
+        const continueImport = window.confirm(
+          "Data baru akan ditambahkan ke data yang sudah ada. Username yang sama akan diperbarui, sedangkan daerah lama tidak akan dihapus. Lanjutkan impor?",
+        );
+        if (!continueImport) {
+          importFile.value = "";
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        importButton.disabled = true;
+        importButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengimpor...';
+        try {
+          const response = await fetch("/api/import-customers?mode=merge", {
+            method: "POST",
+            body: formData,
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error(result.message || "Impor gagal");
+          alert(result.message);
+          window.location.reload();
+        } catch (error) {
+          alert(error.message);
+        } finally {
+          importButton.disabled = false;
+          importButton.innerHTML = '<i class="fas fa-file-import"></i> Impor Data';
+          importFile.value = "";
+        }
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        // Inisialisasi awal saat halaman dibuka
+        filteredRows = Array.from(tbody.querySelectorAll("tr:not(.empty-row)"));
+        filterRows();
+        loadNotificationCount();
+      });
+
+      function loadNotificationCount() {
+        fetch("/api/notifications")
+          .then((response) => response.json())
+          .then((data) => {
+            const unreadCount = data.filter((n) => !n.read).length;
+            const badge = document.getElementById("notification-badge");
+
+            if (unreadCount > 0) {
+              badge.textContent = unreadCount;
+              badge.style.display = "block";
+            } else {
+              badge.style.display = "none";
+            }
+          })
+          .catch((error) =>
+            console.error("Error loading notification count:", error),
+          );
+      }
+
+      setInterval(loadNotificationCount, 30000);
+      window.addEventListener("resize", paginate);
+    </script>
+  </body>
+</html>

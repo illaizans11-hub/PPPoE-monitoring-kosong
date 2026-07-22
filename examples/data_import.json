@@ -1,0 +1,13 @@
+[
+  {
+    "user": "daerahb-andi",
+    "id": "B-001",
+    "nama": "Andi",
+    "lokasi": "Desa Contoh B",
+    "latitude": -6.2,
+    "longitude": 106.8,
+    "router": "ROUTER DAERAH B",
+    "status": "OFFLINE",
+    "profile": "PAKET-10M"
+  }
+]

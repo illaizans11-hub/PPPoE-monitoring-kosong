@@ -1,0 +1,3 @@
+user,id,nama,lokasi,latitude,longitude,router,ip,mac,status,profile
+daeraha-budi,A-001,Budi,Desa Contoh A,-7.2501,112.7501,ROUTER DAERAH A,10.10.0.2,AA:BB:CC:DD:EE:01,OFFLINE,PAKET-10M
+daeraha-sari,A-002,Sari,Desa Contoh A,-7.2510,112.7510,ROUTER DAERAH A,10.10.0.3,AA:BB:CC:DD:EE:02,OFFLINE,PAKET-20M

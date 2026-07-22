@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Monitoring PPPoE</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='icons/logo.png') }}"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      body {
+          background-image: url("{{ url_for('static', filename='Tugu Jogja.jpeg') }}");
+          background-repeat: no-repeat;
+          background-position: center;
+          background-attachment: fixed;
+          background-size: cover;
+          min-height: 100vh;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+      .dashboard-container {
+        padding: 2rem 0;
+        width: 90%;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .menu-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .menu-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .menu-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      .menu-card.map-card .menu-icon {
+        color: #ff6b35;
+      }
+      .menu-card.list-card .menu-icon {
+        color: #e74c3c;
+      }
+      .menu-card.notif-card .menu-icon {
+        color: #8e44ad;
+      }
+
+      .menu-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+      }
+
+      .menu-description {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .stats-section {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .stats-title {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .chart-container {
+        margin-top: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        padding-top: 5rem;
+      }
+
+      .chart-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      .chart-canvas-container {
+        position: relative;
+        height: 350px;
+        min-width: 600px;
+      }
+
+      .chart-title-fixed {
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .color-legend-section {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 2rem;
+        width: 90%;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .legend-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .legend-item {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-left: 5px solid transparent;
+      }
+
+      .legend-item.csr {
+        border-left-color: #27ae60;
+      }
+      .legend-item.apbd {
+        border-left-color: #3498db;
+      }
+
+      .legend-header {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        text-align: center;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #ecf0f1;
+      }
+
+      .legend-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .color-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .color-dot.online {
+        background-color: #27ae60;
+      }
+      .color-dot.offline {
+        background-color: #e74c3c;
+      }
+      .legend-item.csr .color-dot.offline {
+        background-color: #ff6b35;
+      }
+      .legend-item.apbd .color-dot.online {
+        background-color: #3498db;
+      }
+
+      .status-text {
+        font-size: 0.9rem;
+        color: #555;
+        font-weight: 500;
+      }
+
+      .icon-info {
+        font-size: 0.8rem;
+        color: #7f8c8d;
+        text-align: center;
+        margin-top: 0.5rem;
+        padding: 0.3rem;
+        background: #ecf0f1;
+        border-radius: 5px;
+      }
+
+      .tips-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 1.5rem;
+        border-left: 5px solid #27ae60;
+        margin-top: 2rem;
+      }
+
+      .tips-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #155724;
+        margin-bottom: 1rem;
+      }
+
+      .tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .tip-item {
+        font-size: 0.9rem;
+        color: #155724;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #d4edda;
+      }
+      .tip-item:last-child {
+        border-bottom: none;
+      }
+      .tip-item:before {
+        content: "💡 ";
+        margin-right: 0.5rem;
+      }
+
+      /* Style Tambahan untuk pemisah collapse modal agar rapi */
+      .toggle-section-header {
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .toggle-section-header:hover {
+        background-color: #e2e6ea !important;
+      }
+
+      @media (max-width: 576px) {
+        .stats-section,
+        .color-legend-section {
+          padding: 0.5rem;
+        }
+
+        .legend-title {
+          width: 80%;
+          margin: 1rem auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="header">
+        <h1><i class="fas fa-chart-line"></i> Dashboard Monitoring PPPoE</h1>
+        <p>Sistem Monitoring Perangkat Dan User PPPoE</p>
+      </div>
+
+      <div class="menu-grid">
+        <a href="/" class="menu-card map-card">
+          <i class="fas fa-map-marked-alt menu-icon"></i>
+          <div class="menu-title">Peta Monitoring</div>
+          <div class="menu-description">
+            Visualisasi lokasi user PPPoE dalam peta interaktif.
+          </div>
+        </a>
+        <a href="/admin" class="menu-card list-card">
+          <i class="fas fa-list-alt menu-icon"></i>
+          <div class="menu-title">Daftar PPPoE</div>
+          <div class="menu-description">Daftar data pelanggan PPPoE.</div>
+        </a>
+        <a href="/notifications" class="menu-card notif-card">
+          <i class="fas fa-bell menu-icon"></i>
+          <div class="menu-title">Histori Notifikasi</div>
+          <div class="menu-description">
+            Lihat riwayat notifikasi dan aktivitas sistem.
+          </div>
+        </a>
+      </div>
+
+      <div class="stats-section">
+        <div class="stats-title">
+          <i class="fas fa-tachometer-alt"></i> Statistik Sistem
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="total-onts">-</div>
+            <div class="stat-label">Total PPPoE</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="online-onts">-</div>
+            <div class="stat-label">PPPoE Online</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="offline-onts">-</div>
+            <div class="stat-label">PPPoE Offline</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-title-fixed">
+            <h2
+              style="
+                color: #2c3e50;
+                font-weight: 600;
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+              "
+            >
+              History Jumlah User Aktif
+              <button
+                class="btn btn-warning btn-sm"
+                style="margin-left: 10px; pointer-events: all; margin-top: 1rem"
+                onclick="showActiveUsers()"
+              >
+                <i class="fas fa-users"></i> Detail User
+              </button>
+              <a
+                href="/analytics"
+                class="btn btn-info btn-sm"
+                style="margin-left: 5px; pointer-events: all; margin-top: 1rem"
+                ><i class="fas fa-chart-pie"></i> Analitik</a
+              >
+            </h2>
+          </div>
+          <div class="chart-wrapper">
+            <div class="chart-canvas-container">
+              <canvas id="userHistoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-legend-section">
+      <div class="legend-title">
+        <i class="fas fa-palette"></i> Legenda Warna Status Peta
+      </div>
+      <div class="legend-grid">
+        <div class="legend-item csr">
+          <div class="legend-header"><i class="fas fa-headset"></i> CSR</div>
+          <div class="legend-content">
+            <div class="status-indicator">
+              <span class="color-dot online"></span>
+              <span class="status-text">ONLINE - Berfungsi Normal</span>
+            </div>
+            <div class="status-indicator">
+              <span
+                class="color-dot offline"
+                style="background-color: #ff6b35"
+              ></span>
+              <span class="status-text">OFFLINE - Perlu Perhatian</span>
+            </div>
+            <div class="icon-info">Icon: 155</div>
+          </div>
+        </div>
+        <div class="legend-item apbd">
+          <div class="legend-header">
+            <i class="fas fa-calculator"></i> APBD
+          </div>
+          <div class="legend-content">
+            <div class="status-indicator">
+              <span
+                class="color-dot online"
+                style="background-color: #3498db"
+              ></span>
+              <span class="status-text">ONLINE - Berfungsi Normal</span>
+            </div>
+            <div class="status-indicator">
+              <span class="color-dot offline"></span>
+              <span class="status-text">OFFLINE - Prioritas Tinggi</span>
+            </div>
+            <div class="icon-info">Icon: 119</div>
+          </div>
+        </div>
+      </div>
+      <div class="tips-section">
+        <div class="tips-title">
+          <i class="fas fa-lightbulb"></i> Tips Penggunaan
+        </div>
+        <ul class="tips-list">
+          <li class="tip-item">
+            Monitor warna setiap 5 detik (update otomatis)
+          </li>
+          <li class="tip-item">
+            Fokus pada warna ORANYE dan MERAH (indikator masalah)
+          </li>
+          <li class="tip-item">
+            Prioritaskan maintenance berdasarkan warna status
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="activeUsersModal"
+      tabindex="-1"
+      aria-labelledby="activeUsersModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="activeUsersModalLabel">
+              Daftar User Aktif Saat Ini
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div
+              class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2 mt-3 toggle-section-header"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapsePppoe"
+              role="button"
+              aria-expanded="true"
+              aria-controls="collapsePppoe"
+            >
+              <h6 class="fw-bold mb-0 text-success">
+                <i class="fas fa-network-wired me-2"></i>User PPPoE Aktif
+              </h6>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="collapse show" id="collapsePppoe">
+              <table class="table table-striped table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Username</th>
+                    <th>IP Address</th>
+                    <th>MAC Address</th>
+                  </tr>
+                </thead>
+                <tbody id="pppoeTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let userHistoryLineChart;
+
+      function loadStats() {
+        fetch("/api/pppoes")
+          .then((res) => res.json())
+          .then((data) => {
+            const users = Array.isArray(data) ? data : [];
+            const totalOnts = users.length;
+            const onlineOnts = users.filter(
+              (user) => String(user.status || "").trim().toUpperCase() === "ONLINE",
+            ).length;
+            const offlineOnts = Math.max(0, totalOnts - onlineOnts);
+
+            document.getElementById("total-onts").textContent = totalOnts;
+            document.getElementById("online-onts").textContent = onlineOnts;
+            document.getElementById("offline-onts").textContent = offlineOnts;
+          })
+          .catch((err) => console.error("Gagal memuat statistik PPPoE:", err));
+      }
+
+      function updateChartScale(chart) {
+        const dataset0 = chart.data.datasets[0]?.data || [];
+        const dataset1 = chart.data.datasets[1]?.data || [];
+        const combinedData = [...dataset0, ...dataset1];
+
+        if (combinedData.length < 2) {
+          chart.options.scales.y.min = 0;
+          chart.options.scales.y.max = undefined;
+          return;
+        }
+        const minValue = Math.min(...combinedData);
+        const maxValue = Math.max(...combinedData);
+        const range = maxValue - minValue;
+        let padding = range * 0.1;
+        if (padding === 0) {
+          padding = 5;
+        }
+        chart.options.scales.y.min = Math.max(
+          0,
+          Math.floor(minValue - padding),
+        );
+        chart.options.scales.y.max = Math.ceil(maxValue + padding);
+      }
+
+      function formatTimestamp(isoString) {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${day}/${month} ${hours}:${minutes}`;
+      }
+
+      function addNewDataPoint() {
+        fetch("/api/history")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.length > 0 && userHistoryLineChart) {
+              const latestRecord = data[data.length - 1];
+              const chart = userHistoryLineChart;
+              const newLabel = formatTimestamp(latestRecord.timestamp);
+              if (
+                chart.data.labels.length === 0 ||
+                chart.data.labels[chart.data.labels.length - 1] !== newLabel
+              ) {
+                const pppoeCount = latestRecord.pppoe_users || 0;
+                addDataToChart(newLabel, pppoeCount, latestRecord.timestamp);
+              }
+            }
+          })
+          .catch((err) => console.error("Gagal realtime sync:", err));
+      }
+
+      function addDataToChart(label, pppoeData, fullTimestamp) {
+        const chart = userHistoryLineChart;
+        if (label !== null) {
+          chart.data.labels.push(label);
+          chart.data.datasets[0].data.push(pppoeData);
+          chart.config.options.fullTimestamps.push(fullTimestamp);
+        }
+        updateChartScale(chart);
+        const dataCount = chart.data.labels.length;
+        const minVisibleData = 12;
+        if (dataCount > minVisibleData) {
+          const canvasContainer = document.querySelector(
+            ".chart-canvas-container",
+          );
+          canvasContainer.style.width = `${600 + (dataCount - minVisibleData) * 50}px`;
+        }
+        chart.update();
+        const chartWrapper = document.querySelector(".chart-wrapper");
+        chartWrapper.scrollLeft = chartWrapper.scrollWidth;
+      }
+
+      function initializeChart(initialData) {
+        const labels = initialData.map((d) => formatTimestamp(d.timestamp));
+        const pppoeData = initialData.map((d) => d.pppoe_users || 0);
+        const fullTimestamps = initialData.map((d) => d.timestamp);
+
+        const verticalDayBands = {
+          id: "verticalDayBands",
+          beforeDraw(chart) {
+            const {
+              ctx,
+              chartArea: { top, bottom },
+              scales: { x },
+            } = chart;
+            const timestamps = chart.config.options.fullTimestamps;
+            if (!timestamps || timestamps.length === 0) return;
+
+            const dayColors = [
+              "rgba(236, 240, 241, 0.2)",
+              "rgba(255, 255, 255, 0.2)",
+            ];
+
+            let lastDate = null;
+            let colorIndex = 0;
+
+            x.ticks.forEach((tick, index) => {
+              if (index === 0) {
+                lastDate = new Date(timestamps[index]).toDateString();
+                return;
+              }
+
+              const currentDate = new Date(timestamps[index]).toDateString();
+              if (currentDate !== lastDate) {
+                colorIndex = (colorIndex + 1) % dayColors.length;
+              }
+
+              const xStart = x.getPixelForTick(index - 1);
+              const xEnd = x.getPixelForTick(index);
+              const width = xEnd - xStart;
+
+              ctx.save();
+              ctx.fillStyle = dayColors[colorIndex];
+              ctx.fillRect(xStart, top, width, bottom - top);
+              ctx.restore();
+
+              lastDate = currentDate;
+            });
+          },
+        };
+
+        if (userHistoryLineChart) userHistoryLineChart.destroy();
+
+        const ctx = document
+          .getElementById("userHistoryChart")
+          .getContext("2d");
+        userHistoryLineChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "User PPPoE Aktif",
+                data: pppoeData,
+                backgroundColor: "#E5CB9030",
+                borderColor: "#F7D87F",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.1,
+                pointRadius: 3,
+                pointBackgroundColor: "#F7D87F",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            fullTimestamps: fullTimestamps,
+            scales: {
+              y: { title: { display: true, text: "Jumlah User" } },
+            },
+            plugins: {
+              title: { display: false },
+              legend: { display: true, position: "top" },
+            },
+          },
+          plugins: [verticalDayBands],
+        });
+
+        updateChartScale(userHistoryLineChart);
+        userHistoryLineChart.update();
+        addDataToChart(null, null, null, null);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        loadStats();
+        fetch("/api/history")
+          .then((res) => res.json())
+          .then((historyData) => {
+            initializeChart(historyData || []);
+          })
+          .catch((err) => console.error("Gagal load history data:", err));
+
+        setInterval(loadStats, 30000);
+        setInterval(addNewDataPoint, 20000);
+      });
+
+      function showActiveUsers() {
+        const myModal = new bootstrap.Modal(
+          document.getElementById("activeUsersModal"),
+        );
+        const pppoeBody = document.getElementById("pppoeTableBody");
+
+        myModal.show();
+        pppoeBody.innerHTML =
+          '<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i> Memuat data PPPoE...</td></tr>';
+
+        fetch("/api/pppoes")
+          .then((response) => response.json())
+          .then((data) => {
+            pppoeBody.innerHTML = "";
+            if (data.error) {
+              pppoeBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error: ${data.error}</td></tr>`;
+              return;
+            }
+
+            // Render Data PPPoE
+            const activeUsers = data.filter((user) => user.status === "ONLINE");
+            if (activeUsers.length === 0) {
+              pppoeBody.innerHTML =
+                '<tr><td colspan="4" class="text-center">Tidak ada user PPPoE aktif.</td></tr>';
+            } else {
+              activeUsers.forEach((user, index) => {
+                pppoeBody.innerHTML += `<tr><td>${index + 1}</td><td>${user.user || "-"}</td><td>${user.ip || "-"}</td><td>${user.mac || "-"}</td></tr>`;
+              });
+            }
+          })
+          .catch((error) => {
+            pppoeBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Gagal mengambil data.</td></tr>`;
+            console.error("Error fetching active users:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

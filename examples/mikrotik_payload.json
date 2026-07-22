@@ -1,0 +1,19 @@
+{
+  "router": "ROUTER DAERAH A",
+  "pppoe": [
+    {
+      "user": "daeraha-budi",
+      "ip": "10.10.0.2",
+      "mac": "AA:BB:CC:DD:EE:01",
+      "uptime": "1d2h",
+      "status": "ONLINE"
+    },
+    {
+      "user": "daeraha-sari",
+      "ip": "10.10.0.3",
+      "mac": "AA:BB:CC:DD:EE:02",
+      "uptime": "-",
+      "status": "OFFLINE"
+    }
+  ]
+}

@@ -1,0 +1,573 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{{ app_name }} - Peta</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='icons/logo.png') }}"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+      .leaflet-control-custom {
+        background-color: #ffffff;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+        background: #f8f9fb;
+        margin: 0;
+        color: #333;
+        overflow: hidden;
+      }
+
+      /* PERUBAHAN UTAMA PADA LAYOUT */
+      #map {
+        height: 100vh;
+        width: 100%; /* Lebar diubah agar bisa beradaptasi */
+        background-color: #f0f0f0;
+        padding-left: 350px; /* Memberi ruang untuk side panel */
+        transition: padding-left 0.35s ease-in-out; /* Animasi halus saat map bergeser */
+        box-sizing: border-box; /* Pastikan padding tidak menambah lebar total */
+      }
+      body.sidebar-collapsed #map {
+        padding-left: 0; /* Map memenuhi layar saat panel tertutup */
+      }
+
+      /* Panel Samping - Dibuat agar bisa slide */
+      .side-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 350px;
+        height: 100vh;
+        background: #ffffff;
+        z-index: 1001;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #e0e0e0;
+        transform: translateX(0); /* Posisi awal */
+        transition: transform 0.35s ease-in-out; /* Animasi slide */
+      }
+      body.sidebar-collapsed .side-panel {
+        transform: translateX(-100%); /* Geser panel ke kiri hingga hilang */
+      }
+
+      /* CSS BARU UNTUK TOMBOL BUKA/TUTUP */
+      #toggle-sidebar-btn {
+        position: fixed;
+        top: 50%;
+        left: 350px; /* Posisi awal menempel di kanan panel */
+        transform: translateY(-50%);
+        width: 25px;
+        height: 80px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        z-index: 1002;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: #555;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        transition:
+          left 0.35s ease-in-out,
+          background-color 0.2s,
+          color 0.2s;
+      }
+      #toggle-sidebar-btn:hover {
+        background-color: #ff6b35;
+        color: white;
+      }
+      body.sidebar-collapsed #toggle-sidebar-btn {
+        left: 0; /* Posisi saat panel tertutup */
+      }
+      #toggle-sidebar-btn .arrow-icon {
+        transition: transform 0.35s ease;
+      }
+      body.sidebar-collapsed #toggle-sidebar-btn .arrow-icon {
+        transform: rotate(180deg); /* Panah berputar */
+      }
+
+      /* Sisa CSS Anda (tidak diubah) */
+      .panel-header {
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .panel-header h1 {
+        font-size: 1.8rem;
+        margin: 0;
+        color: #ff6b35;
+      }
+      .stats-overview {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .stat-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+      }
+      .stat-box .value {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      .stat-box .label {
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
+      #stat-online .value {
+        color: #27ae60;
+      }
+      #stat-offline .value {
+        color: #e74c3c;
+      }
+      #stat-total .value {
+        color: #3498db;
+      }
+      #stat-users .value {
+        color: #f39c12;
+      }
+      .search-filter {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .search-filter input {
+        width: 89%;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        color: #333;
+        font-size: 1rem;
+      }
+      .offline-list-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 0 20px 20px 20px;
+      }
+      .offline-list-container h3 {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: #e74c3c;
+      }
+      .offline-list-item {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 3px solid #e74c3c;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+      .offline-list-item:hover {
+        background: rgba(231, 76, 60, 0.2);
+      }
+      .offline-list-item .name {
+        font-weight: 500;
+      }
+      .offline-list-item .location {
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+      .top-nav {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        gap: 15px;
+      }
+      .nav-btn {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        color: #555;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .nav-btn:hover {
+        background: #ff6b35;
+        color: white;
+        border-color: #ff6b35;
+      }
+      .nav-btn .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body class="sidebar-collapsed">
+    <div id="toggle-sidebar-btn" title="Buka/Tutup Panel">
+      <i class="fas fa-chevron-left arrow-icon"></i>
+    </div>
+
+    <div class="side-panel">
+      <div class="panel-header">
+        <h1>PPPoE Command Center</h1>
+      </div>
+      <div class="stats-overview">
+        <div class="stat-box" id="stat-total">
+          <div class="value">-</div>
+          <div class="label">Total PPPoE</div>
+        </div>
+        <div class="stat-box" id="stat-online">
+          <div class="value">-</div>
+          <div class="label">Online</div>
+        </div>
+        <div class="stat-box" id="stat-offline">
+          <div class="value">-</div>
+          <div class="label">Offline</div>
+        </div>
+      </div>
+      <div class="search-filter">
+        <input
+          type="text"
+          id="searchONT"
+          placeholder="Cari nama atau lokasi PPPoE..."
+        />
+      </div>
+      <div class="offline-list-container">
+        <h3>
+          <i class="fas fa-triangle-exclamation"></i> Daftar PPPoE Offline
+        </h3>
+        <div id="offline-list">
+          <p style="color: #aaa; text-align: center; margin-top: 20px">
+            Semua perangkat online.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="top-nav">
+      <a href="/dashboard" class="nav-btn" title="Dashboard"
+        ><i class="fas fa-tachometer-alt"></i
+      ></a>
+      <a href="/admin" class="nav-btn" title="Daftar ONT"
+        ><i class="fas fa-list"></i
+      ></a>
+      <a href="/analytics" class="nav-btn" title="Analitik"
+        ><i class="fas fa-chart-pie"></i
+      ></a>
+      <a
+        href="/notifications"
+        class="nav-btn"
+        title="Notifikasi"
+        style="position: relative"
+      >
+        <i class="fas fa-bell"></i>
+        <span class="badge" id="notificationBadge" style="display: none"
+          >0</span
+        >
+      </a>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script>
+      // SCRIPT BAWAAN ANDA DIMULAI DI SINI
+      const map = L.map("map").setView([{{ map_default_lat }}, {{ map_default_lng }}], {{ map_default_zoom }});
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 20,
+      }).addTo(map);
+
+      let allOntData = [];
+      let markers = L.layerGroup();
+      let lastStatus = {};
+      let isFirstLoad = true;
+
+      // ... semua fungsi Anda (updateStats, getMikrotikUserCount, dll.) tetap sama ...
+      function updateStats(onts) {
+        const total = onts.length;
+        const online = onts.filter((ont) =>
+          String(ont.status || "OFFLINE").startsWith("ONLINE"),
+        ).length;
+        document
+          .getElementById("stat-total")
+          .querySelector(".value").textContent = total;
+        document
+          .getElementById("stat-online")
+          .querySelector(".value").textContent = online;
+        document
+          .getElementById("stat-offline")
+          .querySelector(".value").textContent = total - online;
+
+        const offlineList = document.getElementById("offline-list");
+        const offlineOnts = onts.filter(
+          (ont) => !String(ont.status || "OFFLINE").startsWith("ONLINE"),
+        );
+        offlineList.innerHTML = "";
+        if (offlineOnts.length > 0) {
+          offlineOnts.forEach((ont) => {
+            const item = document.createElement("div");
+            item.className = "offline-list-item";
+            item.innerHTML = `<div class="name">${
+              ont.user || ont.name || "Tanpa Nama"
+            }</div><div class="location">${ont.lokasi || ""}</div>`;
+            if (typeof ont.latitude === "number" && typeof ont.longitude === "number") {
+              item.onclick = () => map.setView([ont.latitude, ont.longitude], 18);
+            } else {
+              item.style.cursor = "default";
+            }
+            offlineList.appendChild(item);
+          });
+        } else {
+          offlineList.innerHTML =
+            '<p style="color: #aaa; text-align: center; margin-top: 20px;">Semua perangkat online.</p>';
+        }
+      }
+      function getMikrotikUserCount() {
+        fetch("/api/history")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.length > 0) {
+              document
+                .getElementById("stat-users")
+                .querySelector(".value").textContent =
+                data[data.length - 1].pppoe_users || 0;
+            } else {
+              document
+                .getElementById("stat-users")
+                .querySelector(".value").textContent = "0";
+            }
+          });
+      }
+      function applySonarEffect(marker, color) {
+        const iconDiv = marker._icon;
+        if (iconDiv) {
+          iconDiv.style.color = color;
+          iconDiv.classList.add("sonar-ping-emitter");
+          setTimeout(() => {
+            if (iconDiv) iconDiv.classList.remove("sonar-ping-emitter");
+          }, 3000);
+        }
+      }
+      function renderMarkers(onts) {
+        markers.clearLayers();
+        onts.forEach((ont) => {
+          let onColor, offColor;
+          if (ont.icon === 119) {
+            onColor = "#3498db";
+            offColor = "#e74c3c";
+          } else if (ont.icon === 155) {
+            onColor = "#27ae60";
+            offColor = "#ff6b35";
+          } else {
+            onColor = "#27ae60";
+            offColor = "#e74c3c";
+          }
+
+          const isOnline = String(ont.status || "OFFLINE").startsWith("ONLINE");
+          const color = isOnline ? onColor : offColor;
+          const iconHtml = `<div style="background-color:${color};width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);color:#ffffff;font-size:1rem;"><i class="fas fa-wifi"></i></div>`;
+          const icon = L.divIcon({
+            html: iconHtml,
+            iconSize: [24, 24],
+            className: "",
+          });
+          const marker = L.marker([ont.latitude, ont.longitude], { icon });
+
+          let popupContent = `<b>${ont.user}</b>`;
+          if (ont.lokasi)
+            popupContent += `<br><span style='font-size: 0.9em; color: #aaa;'>${ont.lokasi}</span>`;
+          const ipValue = String(ont.ip || "-").trim();
+          if (ipValue && ipValue !== "-") {
+            popupContent += `<br>IP: <a href='http://${ipValue}' target='_blank' style='color:#3498db;'>${ipValue}</a>`;
+          } else {
+            popupContent += "<br>IP: -";
+          }
+          popupContent += `<br>Status: <span style='color:${color};'>${ont.status}</span>`;
+          marker.bindPopup(popupContent);
+
+          marker.on("mouseover", function (e) {
+            this.openPopup();
+          });
+          marker.on("mouseout", function (e) {
+            this.closePopup();
+          });
+          marker.addTo(markers);
+
+          const statusKey = String(ont.user || ont.id || "").trim();
+          if (
+            statusKey &&
+            lastStatus[statusKey] !== undefined &&
+            lastStatus[statusKey] !== isOnline
+          ) {
+            applySonarEffect(marker, color);
+          }
+          if (statusKey) lastStatus[statusKey] = isOnline;
+        });
+        map.addLayer(markers);
+      }
+      function loadAllData() {
+        fetch("/api/pppoes")
+          .then((res) => res.json())
+          .then((data) => {
+            // === PERUBAHAN DI SINI: Filter data untuk hanya menyertakan APBD ===
+            const apbdData = data.filter((ont) => ont.icon === 119);
+
+            allOntData = apbdData; // Simpan data yang sudah difilter
+            updateStats(apbdData);
+            renderMarkers(
+              apbdData.filter(
+                (ont) =>
+                  typeof ont.latitude === "number" &&
+                  typeof ont.longitude === "number",
+              ),
+            );
+
+            if (isFirstLoad && apbdData.length > 0) {
+              const coordinates = apbdData
+                .filter(
+                  (ont) =>
+                    typeof ont.latitude === "number" &&
+                    typeof ont.longitude === "number",
+                )
+                .map((ont) => [ont.latitude, ont.longitude]);
+
+              if (coordinates.length > 0) {
+                const bounds = L.latLngBounds(coordinates);
+                map.fitBounds(bounds, { padding: [50, 50] });
+              }
+              isFirstLoad = false;
+            }
+          });
+        getMikrotikUserCount();
+      }
+      document
+        .getElementById("searchONT")
+        .addEventListener("input", function (e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const filteredOnts = allOntData.filter(
+            (ont) =>
+              (ont.user && ont.user.toLowerCase().includes(searchTerm)) ||
+              (ont.nama_asli && ont.nama_asli.toLowerCase().includes(searchTerm)) ||
+              (ont.lokasi && ont.lokasi.toLowerCase().includes(searchTerm)),
+          );
+          renderMarkers(filteredOnts);
+        });
+      loadAllData();
+      setInterval(loadAllData, 5000);
+
+      // --- SCRIPT BARU UNTUK FUNGSI BUKA-TUTUP DENGAN LOCALSTORAGE ---
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.getElementById("toggle-sidebar-btn");
+
+        // 🔹 Kalau terakhir tersimpan "expanded", hapus collapsed
+        if (localStorage.getItem("sidebar") === "expanded") {
+          document.body.classList.remove("sidebar-collapsed");
+        }
+
+        toggleButton.addEventListener("click", function () {
+          document.body.classList.toggle("sidebar-collapsed");
+
+          // 🔹 Simpan state ke localStorage
+          if (document.body.classList.contains("sidebar-collapsed")) {
+            localStorage.setItem("sidebar", "collapsed");
+          } else {
+            localStorage.setItem("sidebar", "expanded");
+          }
+
+          // 🔹 Fix ukuran peta
+          setTimeout(function () {
+            map.invalidateSize();
+          }, 350);
+        });
+      });
+
+      // === Custom Control: Fit Area ===
+      L.Control.FitArea = L.Control.extend({
+        onAdd: function (map) {
+          let container = L.DomUtil.create(
+            "div",
+            "leaflet-bar leaflet-control",
+          );
+          let button = L.DomUtil.create("a", "", container);
+          button.innerHTML = '<i class="fas fa-expand-arrows-alt"></i>';
+          button.href = "#";
+          button.title = "Fit ke Semua Marker";
+
+          L.DomEvent.on(button, "click", function (e) {
+            L.DomEvent.stopPropagation(e);
+            L.DomEvent.preventDefault(e);
+
+            if (
+              typeof markers !== "undefined" &&
+              markers.getLayers().length > 0
+            ) {
+              let group = L.featureGroup(markers.getLayers());
+              map.fitBounds(group.getBounds().pad(0.2));
+            } else {
+              alert("Tidak ada marker untuk difit.");
+            }
+          });
+
+          return container;
+        },
+        onRemove: function (map) {},
+      });
+
+      // === Tambahkan Legenda & Fit Area ke Peta ===
+      document.addEventListener("DOMContentLoaded", function () {
+        if (typeof map !== "undefined") {
+          // tombol fit area muncul di pojok kiri atas (sejajar zoom in/out)
+          new L.Control.FitArea({ position: "topleft" }).addTo(map);
+          new L.Control.LegendCustom({ position: "bottomleft" }).addTo(map);
+        }
+      });
+    </script>
+  </body>
+</html>

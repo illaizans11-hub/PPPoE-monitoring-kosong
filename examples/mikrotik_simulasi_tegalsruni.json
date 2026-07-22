@@ -1,0 +1,404 @@
+{
+  "router": "ROUTER TEGALSRUNI",
+  "pppoe": [
+    {
+      "user": "TEGALSRUNI-mawardi",
+      "ip": "10.20.30.1",
+      "mac": "02:00:00:00:00:01",
+      "uptime": "2h07m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-triromadona",
+      "ip": "10.20.30.2",
+      "mac": "02:00:00:00:00:02",
+      "uptime": "3h14m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "samiran-slametesti",
+      "ip": "10.20.30.3",
+      "mac": "02:00:00:00:00:03",
+      "uptime": "4h21m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "samiran-suroto",
+      "ip": "10.20.30.4",
+      "mac": "02:00:00:00:00:04",
+      "uptime": "5h28m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "samiran-paiditegalsruni",
+      "ip": "10.20.30.5",
+      "mac": "02:00:00:00:00:05",
+      "uptime": "6h35m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sumarlan",
+      "ip": "10.20.30.6",
+      "mac": "02:00:00:00:00:06",
+      "uptime": "7h42m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sitingaisah",
+      "ip": "10.20.30.7",
+      "mac": "02:00:00:00:00:07",
+      "uptime": "8h49m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-supadi",
+      "ip": "10.20.30.8",
+      "mac": "02:00:00:00:00:08",
+      "uptime": "1h56m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-suyoto",
+      "ip": "10.20.30.9",
+      "mac": "02:00:00:00:00:09",
+      "uptime": "2h03m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-gunandar",
+      "ip": "10.20.30.10",
+      "mac": "02:00:00:00:00:0A",
+      "uptime": "3h10m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-gunawan",
+      "ip": "10.20.30.11",
+      "mac": "02:00:00:00:00:0B",
+      "uptime": "4h17m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-seri",
+      "ip": "10.20.30.12",
+      "mac": "02:00:00:00:00:0C",
+      "uptime": "5h24m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-srihartinah",
+      "ip": "10.20.30.13",
+      "mac": "02:00:00:00:00:0D",
+      "uptime": "6h31m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-suparno",
+      "ip": "10.20.30.14",
+      "mac": "02:00:00:00:00:0E",
+      "uptime": "7h38m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-trisukanti",
+      "ip": "10.20.30.15",
+      "mac": "02:00:00:00:00:0F",
+      "uptime": "8h45m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "samiran-khoerum",
+      "ip": "10.20.30.16",
+      "mac": "02:00:00:00:00:10",
+      "uptime": "1h52m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "sarnu",
+      "ip": "10.20.30.17",
+      "mac": "02:00:00:00:00:11",
+      "uptime": "2h59m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "samiran-abdulhayyitegalsruni",
+      "ip": "10.20.30.18",
+      "mac": "02:00:00:00:00:12",
+      "uptime": "3h06m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-suradi",
+      "ip": "10.20.30.19",
+      "mac": "02:00:00:00:00:13",
+      "uptime": "4h13m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sumari",
+      "ip": "10.20.30.20",
+      "mac": "02:00:00:00:00:14",
+      "uptime": "5h20m",
+      "status": "ONLINE"
+    },
+    {
+      "user": "TEGALSRUNI-kamdani",
+      "ip": "-",
+      "mac": "02:00:00:00:00:15",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-linaastuti",
+      "ip": "-",
+      "mac": "02:00:00:00:00:16",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sumiyem",
+      "ip": "-",
+      "mac": "02:00:00:00:00:17",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-taufiqsyahumar",
+      "ip": "-",
+      "mac": "02:00:00:00:00:18",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sehabudin",
+      "ip": "-",
+      "mac": "02:00:00:00:00:19",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-NAFIS",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1A",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-tardi05",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1B",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-mino",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1C",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-supardi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1D",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sutargo",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1E",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-sukarno",
+      "ip": "-",
+      "mac": "02:00:00:00:00:1F",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-nardi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:20",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-ngateno",
+      "ip": "-",
+      "mac": "02:00:00:00:00:21",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sartono",
+      "ip": "-",
+      "mac": "02:00:00:00:00:22",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-harno",
+      "ip": "-",
+      "mac": "02:00:00:00:00:23",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "suparjo",
+      "ip": "-",
+      "mac": "02:00:00:00:00:24",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-riyanto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:25",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-yanto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:26",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-ngatuntegalsruni",
+      "ip": "-",
+      "mac": "02:00:00:00:00:27",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-agusardianto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:28",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sukamto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:29",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-darmini",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2A",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-jumadi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2B",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-sugito",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2C",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sisri",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2D",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-parmi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2E",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-suwanditegalsruni",
+      "ip": "-",
+      "mac": "02:00:00:00:00:2F",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sumarwaluyo",
+      "ip": "-",
+      "mac": "02:00:00:00:00:30",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-kardi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:31",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-srisulamiyah",
+      "ip": "-",
+      "mac": "02:00:00:00:00:32",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-suprapto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:33",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-sumarnitegalsruni",
+      "ip": "-",
+      "mac": "02:00:00:00:00:34",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-sutardi",
+      "ip": "-",
+      "mac": "02:00:00:00:00:35",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "samiran-wanto",
+      "ip": "-",
+      "mac": "02:00:00:00:00:36",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-ndaroni",
+      "ip": "-",
+      "mac": "02:00:00:00:00:37",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-fitriyani",
+      "ip": "-",
+      "mac": "02:00:00:00:00:38",
+      "uptime": "-",
+      "status": "OFFLINE"
+    },
+    {
+      "user": "TEGALSRUNI-ramelan",
+      "ip": "-",
+      "mac": "02:00:00:00:00:39",
+      "uptime": "-",
+      "status": "OFFLINE"
+    }
+  ]
+}
