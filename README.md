@@ -2,7 +2,7 @@
 
 Aplikasi Flask untuk menerima data PPPoE dari MikroTik, menampilkan dashboard, daftar pelanggan, analitik, notifikasi, dan peta pelanggan.
 
-Versi ini sudah dibuat **netral terhadap nama daerah**. Tidak ada data Salam/Pathuk atau daftar router yang ditulis tetap di kode. Data awal sengaja kosong dan dapat diisi melalui tombol **Impor Data** atau endpoint MikroTik.
+Versi ini sudah dibuat **netral terhadap nama daerah**. Tidak ada data  daftar router yang ditulis tetap di kode. Data awal sengaja kosong dan dapat diisi melalui tombol **Impor Data** atau endpoint MikroTik.
 
 ## Yang sudah disesuaikan
 
@@ -50,7 +50,6 @@ Buka:
 
 Pada halaman **Daftar Pelanggan**, tekan **Impor Data**, lalu pilih file `.csv` atau `.json`. Impor melalui tombol memakai mode `merge`, sehingga daerah lama tetap tersimpan. Username yang sama akan diperbarui, sedangkan username baru akan ditambahkan.
 
-Mode `replace` hanya tersedia melalui API dan digunakan saat memang ingin mengganti seluruh data. Jangan gunakan mode tersebut untuk penambahan daerah baru.
 
 Kolom yang dikenali:
 
