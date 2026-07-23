@@ -1,0 +1,3 @@
+﻿user;id;nama;lokasi;latitude;longitude;router;ip;mac;status;profile
+TEGALSRUNI-contoh01;CMN000001;Nama Pelanggan Satu;Tegalsruni RT 01 RW 05, Samiran, Selo;-7.508.964;110.458.570;ROUTER TEGALSRUNI;-;-;OFFLINE;PAKET-100K
+TEGALSRUNI-contoh02;CMN000002;Nama Pelanggan Dua;Tegalsruni RT 02 RW 05, Samiran, Selo;-7.509.285;110.458.394;ROUTER TEGALSRUNI;-;-;OFFLINE;PAKET-700K
